@@ -1,49 +1,48 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-int n;       // 棋盘大小
-int *board;  // board[col] = row 放置皇后在第 col 列的行
-
-// 检查当前位置 (row, col) 是否安全
-int is_safe(int row, int col) {
-    for (int c = 0; c < col; c++) {
-        int r = board[c];
-        if (r == row || abs(r - row) == abs(c - col)) {
-            return 0; // 同行或同斜线冲突
-        }
-    }
-    return 1;
-}
-
-// 回溯函数，尝试在 col 列放皇后
-void solve(int col) {
-    if (col == n) {
-        for (int i = 0; i < n; i++) {
-            if (i > 0) fprintf(stdout, " ");
-            fprintf(stdout, "%d", board[i]);
-        }
-        fprintf(stdout, "\n");
+void backtrack(char *str, int len, int *used, char *perm, int depth) {
+    if (depth == len) {
+        perm[depth] = '\0';
+        puts(perm);
         return;
     }
-    for (int row = 0; row < n; row++) {
-        if (is_safe(row, col)) {
-            board[col] = row;
-            solve(col + 1);
-        }
+    for (int i = 0; i < len; i++) {
+        if (used[i]) continue;  // 已经选过
+        // 选择字符
+        used[i] = 1;
+        perm[depth] = str[i];
+        backtrack(str, len, used, perm, depth + 1);
+        used[i] = 0;  // 回溯
     }
 }
 
 int main(int argc, char **argv) {
     if (argc != 2) return 1;
 
-    n = atoi(argv[1]);
-    if (n <= 0) return 0;
+    char *input = argv[1];
+    int len = strlen(input);
+    char *str = strdup(input);
 
-    board = calloc(n, sizeof(int));
-    if (!board) return 1;
+    // 排序输入，保证字典序
+    for (int i = 0; i < len - 1; i++) {
+        for (int j = i + 1; j < len; j++) {
+            if (str[i] > str[j]) {
+                char tmp = str[i];
+                str[i] = str[j];
+                str[j] = tmp;
+            }
+        }
+    }
 
-    solve(0);
+    int *used = calloc(len, sizeof(int));
+    char *perm = malloc(len + 1);
 
-    free(board);
+    backtrack(str, len, used, perm, 0);
+
+    free(used);
+    free(perm);
+    free(str);
     return 0;
 }
