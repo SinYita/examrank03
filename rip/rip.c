@@ -42,6 +42,8 @@ int ft_strlen(char *str)
 
 int min_remove(char *str)
 {
+    if(!str)
+        return 0;
     int balance = 0;
     int unbalance = 0;
     for(int i = 0;str[i];i ++)
@@ -64,14 +66,7 @@ int ok(char *str)
         return 1;
     return 0;   
 }
-// void print_result(char *str)
-// {
-//     for(int i = 0;str[i]; i ++)
-//     {
-//         write(1, &str[i], 1);
-//     }
-// }
-int cnt = 0;
+
 void dfs(char *str,int res,int l, int r,int depth)
 {
     if(l + r == res && ok(str))
@@ -104,8 +99,29 @@ int main(int argc, char **argv)
 {
     if(argc != 2)
         return 1;
-    char *str = argv[1];
+    char *str = strdup(argv[1]);
+    if (!str)
+        return 1;
+    // if(argv[1][0] == ')' && argv[1][1] =='(')
+    // {
+    //     write(1, "  ",2);
+    //     return 0;
+    // }
+    // if(!argv[1])
+    // {
+    //     printf("");
+    //     return 0;
+    // }
     int rem = min_remove(str);
+    // if(rem == ft_strlen(str))
+    // {
+    //     for(int i = 0;i < ft_strlen(str);i ++)
+    //     {
+    //         write(1," ",1);
+    //     }
+    //     return 0;
+    // }
     dfs(str,rem,0,0,0);
+    free(str);
     return 0;
 }
